@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+   <!-- <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>-->
+
+
+    <color name="colorFloatingActionButton">#6633FF</color>
+    <color name="colorSplashBackground">#6633FF</color>
+    <color name="colorLogin">#6633FF</color>
+    <color name="colorLoginButton">#6633FF</color>
+    <color name="colorCursor">#cccccc</color>
+    <color name="head_color">#6633FF</color>
+    <color name="information_title_color">#666666</color>
+    <color name="list_bg_color">#FFF4F4F4</color>
+    <color name="list_focus_color">#bdbdbd</color>
+    <!-- Grey-->
+    <color name="grey_000">#FFFFFF</color>
+    <color name="grey_050">#FAFAFA</color>
+    <color name="grey_100">#F5F5F5</color>
+    <color name="grey_200">#EEEEEE</color>
+    <color name="grey_300">#E0E0E0</color>
+    <color name="grey_400">#BDBDBD</color>
+    <color name="grey_500">#9E9E9E</color>
+    <color name="grey_600">#757575</color>
+    <color name="grey_700">#616161</color>
+    <color name="grey_800">#424242</color>
+    <color name="grey_900">#212121</color>
+
+
+    <color name="content_background">#f2f2f2</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!-- 常用颜色值 -->
+    <color name="white">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="black_alpha_128">#80000000</color>
+    <color name="list_item_background_pressed">#FCFCFC</color>
+
+    <!-- 下拉刷新时，颜色值 -->
+    <color name="swiperefresh_color4">#ffaa66cc</color>
+    <color name="textColor">#cdcdcd</color>
+    <!--  created by  fei -->
+    <color name="text_secondary_color">#9d9d9d</color>
+
+    <!-- 新版登录模块-->
+    <color name="login_line_color">#dededf</color>
+    <color name="login_input_active">#31b968</color>
+    <color name="login_other_color">#cacaca</color>
+    <color name="account_input_bg_color">#33ffffff</color>
+    <color name="account_lock_bg">#ff43815c</color>
+    <color name="account_lock_font_color">#FF68997C</color>
+    <color name="account_input_color">#c9c9c9</color>
+    <color name="account_pressed_true">#14b94d</color>
+    <color name="black_2c">#2c2c2c</color>
+    <color name="write">#ffffff</color>
+    <color name="theme">#03A9F4</color>
+    <color name="bg_press">#ebebeb</color>
+    <color name="bg_press_material">#d4d4d4</color>
+    <color name="bottom_navigation_normal">#ff60917a</color>
+
+
+    <color name="color_0">#FFF0F5</color>
+    <color name="color_1">#FFE1FF</color>
+    <color name="color_2">#E6E6FA</color>
+    <color name="color_3">#C1FFC1</color>
+    <color name="color_4">#B22222</color>
+    <color name="color_5">#836FFF</color>
+    <color name="color_6">#68228B</color>
+    <color name="color_7">#5CACEE</color>
+    <color name="color_8">#43CD80</color>
+    <color name="color_9">#00EE00</color>
+    <color name="color_10">#708090</color>
+</resources>
