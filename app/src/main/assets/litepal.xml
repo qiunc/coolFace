@@ -8,6 +8,8 @@
     <list>
         <mapping class="com.example.myapplication.db.Class"/>
         <mapping class="com.example.myapplication.db.Student"/>
+        <mapping class="com.example.myapplication.db.StudentAttendance"/>
+        <mapping class="com.example.myapplication.db.Subjects"/>
     </list>
 
 </litepal>

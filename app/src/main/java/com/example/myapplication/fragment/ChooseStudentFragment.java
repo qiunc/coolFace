@@ -1,5 +1,6 @@
 package com.example.myapplication.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,10 +17,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.myapplication.R;
 import com.example.myapplication.db.Class;
 import com.example.myapplication.db.Student;
+import com.example.myapplication.util.Constant;
 import com.example.myapplication.util.HttpUtil;
 import com.example.myapplication.util.Utility;
 
@@ -32,6 +35,11 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
+
+/**
+ * Created by Qiunc on 2020/3/28 0003.
+ */
 
 public class ChooseStudentFragment extends Fragment {
     public static final int LEVEL_CLASS = 0;
@@ -58,8 +66,11 @@ public class ChooseStudentFragment extends Fragment {
 
     private int currentLevel;
 
+    private SwipeRefreshLayout swipeRefresh;
 
 
+
+    @SuppressLint("ResourceAsColor")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -67,6 +78,15 @@ public class ChooseStudentFragment extends Fragment {
         titleText = (TextView) view.findViewById(R.id.title_text);
         backButton = (Button) view.findViewById(R.id.back_button);
         listView = (ListView) view.findViewById(R.id.list_view);
+        swipeRefresh = (SwipeRefreshLayout)view.findViewById(R.id.swipe_refresh);
+        swipeRefresh.setColorSchemeColors(R.color.colorPrimary);
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                String address = Constant.htUrl + "QueryAllStudent";
+                queryFromServer(address, "yourClass");
+            }
+        });
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, dataList);
         listView.setAdapter(adapter);
         return view;
@@ -95,6 +115,8 @@ public class ChooseStudentFragment extends Fragment {
         });
         queryClass();
     }
+
+
     private void queryClass(){
         titleText.setText("CCSU");
         backButton.setVisibility(View.GONE);
@@ -108,8 +130,7 @@ public class ChooseStudentFragment extends Fragment {
             listView.setSelection(0);
             currentLevel = LEVEL_CLASS;
         }else {
-            String address = "http://139.196.12.165:8080/AndroidTest/QueryAllStudent";
-            queryFromServer(address, "yourClass");
+
         }
     }
 
@@ -130,6 +151,7 @@ public class ChooseStudentFragment extends Fragment {
 
     private void queryFromServer(String address, final String type) {
         showProgressDialog();
+
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -146,6 +168,8 @@ public class ChooseStudentFragment extends Fragment {
                             closeProgressDialog();
                             if ("yourClass".equals(type)) {
                                 queryClass();
+                                adapter.notifyDataSetChanged();
+                                swipeRefresh.setRefreshing(false);
                             }
                         }
                     });

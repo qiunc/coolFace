@@ -35,6 +35,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.R;
 import com.example.myapplication.util.Constant;
+import com.example.myapplication.util.ImageTools;
 import com.heynchy.compress.compressUtil.FileSizeUtil;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -143,6 +144,7 @@ public class FaceCreatFragment extends Fragment implements View.OnClickListener 
                 .build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
+                progressDialog.dismiss();
                 Toast.makeText(getActivity(), "调用失败", Toast.LENGTH_SHORT).show();
             }
 
@@ -168,7 +170,8 @@ public class FaceCreatFragment extends Fragment implements View.OnClickListener 
 
                                 // getDetail();
                             } else {
-                                Toast.makeText(getActivity(), "上传图片无法获取人脸标识", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                                Toast.makeText(getActivity(), "上传图片无法获取人脸标识", Toast.LENGTH_LONG).show();
                             }
                         }
 
@@ -180,6 +183,10 @@ public class FaceCreatFragment extends Fragment implements View.OnClickListener 
         });
     }
 
+
+    /**
+     * 将个人信息存储到数据库
+     */
     private void sendFaceInfo(JSONObject jsonObject, String image, String faceToken) {
         try {
             JSONObject attr = jsonObject.getJSONObject("attributes");
@@ -195,6 +202,7 @@ public class FaceCreatFragment extends Fragment implements View.OnClickListener 
                     .build().execute(new StringCallback() {
                 @Override
                 public void onError(Call call, Exception e, int id) {
+                    progressDialog.dismiss();
                     Toast.makeText(getActivity(), "连接数据库失败", Toast.LENGTH_SHORT).show();
                 }
 
@@ -210,28 +218,10 @@ public class FaceCreatFragment extends Fragment implements View.OnClickListener 
         }
     }
 
-//    private void getDetail(){
-//        RequestParams params = new RequestParams();
-//        params.put("api_key", Constant.Key);
-//        params.put("api_secret",Constant.Secret);
-//        params.put("outer_id",Constant.outer_id);
-//        String url="https://api-cn.faceplusplus.com/facepp/v3/faceset/getdetail";
-//        HttpUtil.post(url,params,new AsyncHttpResponseHandler(){
-//            @Override
-//            public void onSuccess(String resultJson) {
-//                super.onSuccess(resultJson);
-//                Log.d("def",resultJson.toString());
-////                result.setText(resultJson.toString());
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable throwable, String s) {
-//                super.onFailure(throwable, s);
-//                Log.d("de",s.toString());
-//            }
-//        });
-//    }
 
+    /**
+     * 将face_token加入faceSet
+     */
     private void sendFaceToken(String faceToken) {
         OkHttpUtils.post()
                 .url(Constant.addfaceUrl)
@@ -263,7 +253,9 @@ public class FaceCreatFragment extends Fragment implements View.OnClickListener 
 
     }
 
-
+    /**
+     * 拍照功能的部分
+     */
     private void choosePicture() {
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
@@ -303,7 +295,6 @@ public class FaceCreatFragment extends Fragment implements View.OnClickListener 
 //                //指定照片保存路径（SD卡），image.jpg为一个临时文件，每次拍照后这个图片都会被替换
 //                openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
 //                startActivityForResult(openCameraIntent, TAKE_PICTURE);
-//
                 File outputImage = new File(getActivity().getExternalCacheDir(), "output_image.jpg");
                 try {
                     if (outputImage.exists()) {
@@ -333,7 +324,6 @@ public class FaceCreatFragment extends Fragment implements View.OnClickListener 
                 case TAKE_PICTURE:
                     try {
                         // 将拍摄的照片显示出来
-
                         final Bitmap bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(imageUri));//得到照片的bitmap
                         //  final Bitmap smallBitmap = ImageTools.zoomBitmap(bitmap, bitmap.getWidth() / SCALE, bitmap.getHeight() / SCALE);//处理一下照片
                         //  bitmap.recycle();
@@ -343,7 +333,8 @@ public class FaceCreatFragment extends Fragment implements View.OnClickListener 
                             public void run() {
                                 String imageName = String.valueOf(System.currentTimeMillis());//获得照片的名字
                                 ImageTools.savePhotoToSDCard(bitmap, Environment.getExternalStorageDirectory().getAbsolutePath(), imageName);//将照片保存到本地
-                                Log.d(TAG, Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + imageName + ".jpg");
+                                imageAbsolutePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + imageName + ".jpg";
+                                Log.d(TAG, imageAbsolutePath);
                             }
                         }).start();
 
@@ -365,54 +356,6 @@ public class FaceCreatFragment extends Fragment implements View.OnClickListener 
                 default:
                     break;
             }
-//        if (resultCode == RESULT_OK) {
-//            switch (requestCode) {
-//                case TAKE_PICTURE:
-//
-//                    try {
-//                        //将拍摄的照片显示出来
-//                        Bitmap bitmap= BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(imageUri));
-//                        Bitmap newBitmap = ImageTools.zoomBitmap(bitmap, bitmap.getWidth() / SCALE, bitmap.getHeight() / SCALE);
-//                       //由于Bitmap内存占用较大，这里需要回收内存，否则会报out of memory异常
-//                        bitmap.recycle();
-//
-//                        //将处理过的图片显示在界面上，并保存到本地
-////                        Log.d(TAG, Environment.getExternalStorageDirectory().getAbsolutePath());
-////                        Log.d(TAG, String.valueOf(System.currentTimeMillis()));
-////                        ImageTools.savePhotoToSDCard(newBitmap, Environment.getExternalStorageDirectory().getAbsolutePath(), String.valueOf(System.currentTimeMillis()));
-//                        iv_face.setImageBitmap(newBitmap);
-//                    }catch (FileNotFoundException e){
-//                        e.printStackTrace();
-//                    }
-//
-//                    break;
-//
-//                case CHOOSE_PICTURE:
-//                    ContentResolver resolver = getActivity().getContentResolver();
-//                    //照片的原始资源地址
-//                    Uri originalUri = data.getData();
-//                    try {
-//                        //使用ContentProvider通过URI获取原始图片
-//                        Bitmap photo = MediaStore.Images.Media.getBitmap(resolver, originalUri);
-//                        if (photo != null) {
-//                            //为防止原始图片过大导致内存溢出，这里先缩小原图显示，然后释放原始Bitmap占用的内存
-//                            Bitmap smallBitmap = ImageTools.zoomBitmap(photo, photo.getWidth() / SCALE, photo.getHeight() / SCALE);
-//                            //释放原始图片占用的内存，防止out of memory异常发生
-//                            photo.recycle();
-//
-//                            iv_face.setImageBitmap(smallBitmap);
-//                        }
-//                    } catch (FileNotFoundException e) {
-//                        e.printStackTrace();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                    break;
-//
-//                default:
-//                    break;
-//            }
-//        }
         }
     }
 

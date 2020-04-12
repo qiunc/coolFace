@@ -1,6 +1,8 @@
-package com.example.myapplication.fragment;
+package com.example.myapplication;
+
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,22 +14,25 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
 
-import com.example.myapplication.R;
 import com.example.myapplication.db.Class;
 import com.example.myapplication.db.Student;
+import com.example.myapplication.db.StudentAttendance;
+import com.example.myapplication.db.Subjects;
 import com.example.myapplication.util.Constant;
+import com.example.myapplication.util.DbUtil;
+import com.example.myapplication.util.ImageTools;
+import com.example.myapplication.util.Utility;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -40,19 +45,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import okhttp3.Call;
 
-import static android.app.Activity.RESULT_OK;
-
 /**
  * Created by qiunc on 2020/4/3 0003.
  */
 
-public class FaceSearchFragment extends Fragment implements View.OnClickListener {
+public class FaceSearchActivity extends AppCompatActivity implements View.OnClickListener {
     private Uri imageUri;
     private String similarity;
     private ImageView iv_face;
@@ -62,48 +66,44 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
     private Button b_subject_choice;
     private Button b_date_choice;
     private AlertDialog alertDialog;
-
+    private String returnSubjectData;
     private ArrayList<String> stringArrayList;
     private String[] className;
-  //  private TextView tv_similar;
-//    private ImageView iv_result_face;
-  //  private TextView tv_name_v;
-  //  private TextView tv_sex_v;
-  //  private TextView tv_age_v;
-  //  private TextView tv_yz_v;
     private static final int SCALE = 5;//照片缩小比例
     private static final int TAKE_PICTURE = 0;
     private static final int CHOOSE_PICTURE = 1;
+    private static final int ADD_SUBJECTS = 2;
     private static final String TAG = "FaceSearchFragment";
-    private View view;
-//    private View search_face;
-//    private View no_face;
-
+    private int flag1;
+    private int flag2;
 
     private List<Student> studentList;
+    private List<StudentAttendance> studentAttendanceList = new ArrayList<StudentAttendance>();;
+    private StudentAttendance studentAttendance = new StudentAttendance();
+    private ProgressDialog progressDialog;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.facesearch, container, false);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.facesearch);
         initViews();
         initEvent();
-        return view;
     }
 
+
     private void initViews() {
-        iv_face = (ImageView) view.findViewById(R.id.iv_face);
-        b_face_choice = (Button) view.findViewById(R.id.b_face_choice);
-        b_face_enter = (Button) view.findViewById(R.id.b_face_enter);
-        b_date_choice = (Button) view.findViewById(R.id.b_date_choice);
-        b_class_choice = (Button) view.findViewById(R.id.b_class_choice);
-        b_subject_choice = (Button) view.findViewById(R.id.b_subject_choice);
+        iv_face = (ImageView) findViewById(R.id.iv_face);
+        b_face_choice = (Button) findViewById(R.id.b_face_choice);
+        b_face_enter = (Button) findViewById(R.id.b_face_enter);
+        b_date_choice = (Button) findViewById(R.id.b_date_choice);
+        b_class_choice = (Button) findViewById(R.id.b_class_choice);
+        b_subject_choice = (Button) findViewById(R.id.b_subject_choice);
 
 
 //        search_face = (View) view.findViewById(R.id.search_face);
 //        no_face = (View) view.findViewById(R.id.no_face);
 
     }
-
 
 
     private void initEvent() {
@@ -117,7 +117,7 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.b_face_choice:
-                   choosePicture();
+                choosePicture();
                 break;
             case R.id.b_face_enter:
                 detectFace();
@@ -129,7 +129,7 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
                 classChoice();
                 break;
             case R.id.b_subject_choice:
-
+                subjectChoice();
                 break;
             default:
                 break;
@@ -137,6 +137,8 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
     }
 
     private void detectFace() {
+        flag2 = 0;
+        showProgressDialog();
         //将图片转化为bitmap
         Bitmap bitmap = ((BitmapDrawable) iv_face.getDrawable()).getBitmap();
         //这里api要求传入一个字节数组数据，因此要用字节数组输出流
@@ -155,7 +157,8 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
             @Override
             public void onError(Call call, Exception e, int id) {
                 Log.d(TAG, e.toString());
-                Toast.makeText(getActivity(), "调用失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(FaceSearchActivity.this, "调用失败", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
             }
 
             @Override
@@ -165,6 +168,7 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
                     try {
                         object = new JSONObject(response);
                         JSONArray array = object.getJSONArray("faces");
+                        flag1 = array.length();
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject oj = (JSONObject) array.get(i);
                             String face_token = (String) oj.get("face_token");
@@ -182,24 +186,25 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
         OkHttpUtils.post()
                 .url(Constant.searchUrl)
                 .addParams("api_key", Constant.Key)
-                .addParams("api_secret",Constant.Secret)
+                .addParams("api_secret", Constant.Secret)
                 .addParams("face_token", face_token)
                 .addParams("outer_id", Constant.outer_id)
                 .build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
-                Toast.makeText(getActivity(),"调用失败",Toast.LENGTH_SHORT).show();
+                Toast.makeText(FaceSearchActivity.this, "调用失败", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
             }
 
             @Override
             public void onResponse(String response, int id) {
-                Log.d("search",response.toString());
+                Log.d(TAG, response.toString());
                 try {
                     JSONObject object = new JSONObject(response);
                     JSONArray array = object.getJSONArray("results");
                     //比对结果置信度
                     //similarity=object.getString("confidence");
-                    similarity=array.getJSONObject(0).getString("confidence");
+                    similarity = array.getJSONObject(0).getString("confidence");
                     String faceToken = array.getJSONObject(0).getString("face_token");
 
                     //用于参考的置信度阈值1e-3,1e-4,1e-5
@@ -208,13 +213,13 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
                     JSONObject thresholds = object.getJSONObject("thresholds");
 
                     //1e-3
-                    String yz_3=thresholds.getString("1e-3");
-                    if(Double.parseDouble(similarity)>Double.parseDouble(yz_3) && array != null){
+                    String yz_3 = thresholds.getString("1e-3");
+                    if (Double.parseDouble(similarity) > Double.parseDouble(yz_3) && array != null) {
                         getditailByFaceToken(faceToken);
 //                        search_face.setVisibility(View.VISIBLE);
 //                        no_face.setVisibility(View.GONE);
 
-                    }else{
+                    } else {
 //                        no_face.setVisibility(View.VISIBLE);
 //                        search_face.setVisibility(View.GONE);
                     }
@@ -227,24 +232,72 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
         });
     }
 
-    private void getditailByFaceToken(final String faceToken){
-        studentList = LitePal.where("facetoken = ? ",faceToken).find(Student.class);
-        for (Student student : studentList) {
-            Log.d(TAG, student.getTheClassName());
-            Log.d(TAG, student.getStudentNumber());
-            Log.d(TAG, student.getName());
-        }
+    private void getditailByFaceToken(final String faceToken) {
+        Log.d(TAG, "getditailByfaceToken");
+        studentList = LitePal.where("facetoken = ? ", faceToken).find(Student.class);
+        if (studentList.size() > 0) {
+            for (Student student : studentList) {
+                studentAttendance.setDate(b_date_choice.getText().toString());
+                studentAttendance.setTheClassName(student.getTheClassName());
+                studentAttendance.setStudentNumber(student.getStudentNumber());
+                studentAttendance.setSubject(b_subject_choice.getText().toString());
+                studentAttendance.setStudentName(student.getName());
+                studentAttendance.setAttendance("出勤");
+                studentAttendanceList.add(studentAttendance);
+            }
 
+            flag2++;
+            if (flag2 == flag1){
+                attendanceResult();
+            }
+        }
     }
 
-    private void dateChoice(){
+    private void attendanceResult() {
+        Log.d(TAG, "attendanceResult: ");
+        OkHttpUtils.post()
+                .url(Constant.htUrl+"mustQueryAllAttendance")
+                .build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                progressDialog.dismiss();
+                Toast.makeText(FaceSearchActivity.this, "调用失败", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                Utility.handleAttendanceResponse(response);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+//                        StudentAttendance studentAttendance1 = new StudentAttendance();
+//                        studentAttendance1.setDate("2020年4月11日");
+//                        studentAttendance1.setTheClassName("16光电2班");
+//                        studentAttendance1.setStudentNumber("B20160404214");
+//                        studentAttendance1.setStudentName("邱宁聪");
+//                        studentAttendance1.setAttendance("出勤");
+
+                        progressDialog.dismiss();
+
+                        Bundle bundle = new Bundle();
+                        Intent attendanceResultIntent = new Intent(FaceSearchActivity.this, AttendanceResultAcitivity.class);
+                        bundle.putSerializable("attendanceResult",(Serializable)studentAttendanceList);
+                        attendanceResultIntent.putExtras(bundle);
+                        startActivity(attendanceResultIntent);
+                    }
+                });
+            }
+        });
+    }
+
+    private void dateChoice() {
         Calendar calendar = Calendar.getInstance();
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        final String data =  (month+1) + "月-" + dayOfMonth + "日 ";
-                        b_date_choice.setText((String)(year+"年"+(month+1)+"月"+dayOfMonth+"日"));
+                        final String data = (month + 1) + "月-" + dayOfMonth + "日 ";
+                        b_date_choice.setText((String) (year + "年" + (month + 1) + "月" + dayOfMonth + "日"));
                     }
                 },
                 calendar.get(Calendar.YEAR),
@@ -252,28 +305,27 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
                 calendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
     }
+
     private void classChoice() {
         stringArrayList = new ArrayList<String>();
         List<Class> classList = LitePal.findAll(Class.class);
-        for (Class classes : classList){
+        for (Class classes : classList) {
             stringArrayList.add(classes.getTheClassName());
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setIcon(R.mipmap.ic_launcher_round);
-        builder.setTitle("选择一个城市");
+        builder.setTitle("选择一个班级");
         //    指定下拉列表的显示数据
 
         className = new String[stringArrayList.size()];
 
         className = stringArrayList.toArray(className);
         //    设置一个下拉的列表选择项
-        builder.setItems(className, new DialogInterface.OnClickListener()
-        {
+        builder.setItems(className, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
+            public void onClick(DialogInterface dialog, int which) {
                 b_class_choice.setText(className[which]);
-                Toast.makeText(getActivity(), "选择的城市为：" + className[which], Toast.LENGTH_SHORT).show();
+                Toast.makeText(FaceSearchActivity.this, "选择的班级为：" + className[which], Toast.LENGTH_SHORT).show();
             }
         });
         builder.show();
@@ -281,13 +333,49 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
 
 
     private void subjectChoice() {
+        stringArrayList = new ArrayList<>();
+        List<Subjects> subjectsList = LitePal.findAll(Subjects.class);
+        for (Subjects subjects : subjectsList) {
+            stringArrayList.add(subjects.getSubjectName());
+        }
+//        if (returnSubjectData != null){
+//            stringArrayList.add(returnSubjectData);
+//        }
+        stringArrayList.add("添加课程...");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(R.mipmap.ic_launcher_round);
+        builder.setTitle("选择一个课程");
+        //    指定下拉列表的显示数据
 
+        className = new String[stringArrayList.size()];
+
+        className = stringArrayList.toArray(className);
+        //    设置一个下拉的列表选择项
+        builder.setItems(className, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if ("添加课程...".equals(className[which])){
+//                  AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                    builder.setTitle("输入增加的课程");
+//                    builder.setIcon(R.mipmap.ic_launcher_round);
+//                    builder.setView(new EditText(getActivity()));
+//                    builder.setPositiveButton("添加",null);
+//                    builder.setNegativeButton("取消",null);
+                    Intent addSubjectIntent = new Intent(FaceSearchActivity.this, DialogActivity.class);
+                    startActivityForResult(addSubjectIntent,ADD_SUBJECTS);
+                }
+                else {
+                    b_subject_choice.setText(className[which]);
+                    Toast.makeText(FaceSearchActivity.this, "选择的课程为：" + className[which], Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.show();
     }
 
 
-
     private void choosePicture() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle("图片来源");
         dialog.setNegativeButton("取消", null);
         dialog.setItems(new String[]{"拍照", "相册"}, new DialogInterface.OnClickListener() {
@@ -313,21 +401,21 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
             }
 
             private void takePhoto() {
-                File outputImage=new File(getActivity().getExternalCacheDir(),"output_image.jpg");
-                try{
-                    if(outputImage.exists()){
+                File outputImage = new File(FaceSearchActivity.this.getExternalCacheDir(), "output_image.jpg");
+                try {
+                    if (outputImage.exists()) {
                         outputImage.delete();
                     }
                     outputImage.createNewFile();
-                }catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
-                if(Build.VERSION.SDK_INT>=24){
-                    imageUri= FileProvider.getUriForFile(getActivity(),"com.example.cameraablumtest.fileprovider",outputImage);
-                }else{
-                    imageUri=Uri.fromFile(outputImage);
+                if (Build.VERSION.SDK_INT >= 24) {
+                    imageUri = FileProvider.getUriForFile(FaceSearchActivity.this, "com.example.cameraablumtest.fileprovider", outputImage);
+                } else {
+                    imageUri = Uri.fromFile(outputImage);
                 }
-                Intent intent=new Intent("android.media.action.IMAGE_CAPTURE");
+                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 startActivityForResult(intent, TAKE_PICTURE);
             }
@@ -344,15 +432,15 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
                 case TAKE_PICTURE:
                     try {
                         //将拍摄的照片显示出来
-                        Bitmap bitmap= BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(imageUri));
+                        Bitmap bitmap = BitmapFactory.decodeStream(this.getContentResolver().openInputStream(imageUri));
                         iv_face.setImageBitmap(bitmap);
-                    }catch (FileNotFoundException e){
+                    } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
                     break;
 
                 case CHOOSE_PICTURE:
-                    ContentResolver resolver = getActivity().getContentResolver();
+                    ContentResolver resolver = this.getContentResolver();
                     //照片的原始资源地址
                     Uri originalUri = data.getData();
                     try {
@@ -373,6 +461,10 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
                         e.printStackTrace();
                     }
                     break;
+                case ADD_SUBJECTS:
+                   String Data = data.getStringExtra("data_return");
+                    addSubject(Data);
+                    break;
                 default:
                     break;
             }
@@ -380,4 +472,44 @@ public class FaceSearchFragment extends Fragment implements View.OnClickListener
     }
 
 
+    private void addSubject(String data){
+        OkHttpUtils.post()
+                .url(Constant.htUrl+"mustAddSubject")
+                .addParams("subjectName",data)
+                .build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                Toast.makeText(FaceSearchActivity.this, "连接数据库失败", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                Log.d(TAG, response.toString());
+                Toast.makeText(FaceSearchActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
+                DbUtil.updateSubjectSQLite();
+            }
+        });
+    }
+
+    /**
+     * 显示进度对话框
+     */
+    private void showProgressDialog() {
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("正在加载...");
+            progressDialog.setCanceledOnTouchOutside(false);
+        }
+        progressDialog.show();
+    }
+
+    /**
+     * 关闭进度对话框
+     */
+    private void closeProgressDialog() {
+        if (progressDialog != null) {
+
+            progressDialog.dismiss();
+        }
+    }
 }

@@ -1,8 +1,10 @@
 package com.example.myapplication.util;
 
 import android.text.TextUtils;
+
 import com.example.myapplication.db.Class;
 import com.example.myapplication.db.Student;
+import com.example.myapplication.db.StudentAttendance;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,13 +22,15 @@ public class Utility {
      */
     public static boolean handleClassResponse(String response) {
         if (!TextUtils.isEmpty(response)) {
+            LitePal.deleteAll(Student.class);
+            LitePal.deleteAll(Class.class);
             try {
                 JSONArray allClass = new JSONArray(response);
                 for (int i = 0; i < allClass.length(); i++) {
                     JSONObject classObject = allClass.getJSONObject(i);
                     Class aClass = new Class();
                     List<Class> classes = LitePal.where("theClassName = ?", classObject.getString("classname")).find(Class.class);
-                    if(classes == null || classes.size() == 0) {  //表中不存在的班级就创建，否则就跳过
+                    if (classes == null || classes.size() == 0) {  //表中不存在的班级就创建，否则就跳过
                         aClass.setTheClassName(classObject.getString("classname"));
                         aClass.save();
                     }
@@ -57,6 +61,29 @@ public class Utility {
         return false;
     }
 
+    public static boolean handleAttendanceResponse(String response) {
+        if (!TextUtils.isEmpty(response)) {
+            LitePal.deleteAll(StudentAttendance.class);
+            try {
+                JSONArray allAttendance = new JSONArray(response);
+                for (int i = 0; i < allAttendance.length(); i++) {
+                    JSONObject attendanceJSONObject = allAttendance.getJSONObject(i);
+                    StudentAttendance studentAttendance = new StudentAttendance();
+                    studentAttendance.setDate(attendanceJSONObject.getString("date"));
+                    studentAttendance.setTheClassName(attendanceJSONObject.getString("classname"));
+                    studentAttendance.setSubject(attendanceJSONObject.getString("subjectname"));
+                    studentAttendance.setStudentNumber(attendanceJSONObject.getString("studentnumber"));
+                    studentAttendance.setStudentName(attendanceJSONObject.getString("studentname"));
+                    studentAttendance.setAttendance(attendanceJSONObject.getString("attendance"));
+                    studentAttendance.save();
+                }
+                return true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
 
 
 //    /**

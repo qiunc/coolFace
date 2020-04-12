@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import com.example.myapplication.fragment.ChooseStudentFragment;
 import com.example.myapplication.fragment.FaceAlbumFragment;
 import com.example.myapplication.fragment.FaceCreatFragment;
-import com.example.myapplication.fragment.FaceSearchFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         mFragmentSparseArray.append(R.id.today_tab, new ChooseStudentFragment());
         mFragmentSparseArray.append(R.id.record_tab, new FaceCreatFragment());
         mFragmentSparseArray.append(R.id.contact_tab, new FaceAlbumFragment());
-        mFragmentSparseArray.append(R.id.settings_tab, new FaceSearchFragment());
+        //mFragmentSparseArray.append(R.id.settings_tab,);
         mTabRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.sign_iv).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SignActivity.class);
+                Intent intent = new Intent(MainActivity.this, FaceSearchActivity.class);
                 startActivity(intent);
             }
         });
