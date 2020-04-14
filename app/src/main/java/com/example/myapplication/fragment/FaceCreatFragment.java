@@ -192,7 +192,7 @@ public class FaceCreatFragment extends Fragment implements View.OnClickListener 
             JSONObject attr = jsonObject.getJSONObject("attributes");
             String gender = attr.getJSONObject("gender").getString("value");
             OkHttpUtils.post()
-                    .url("http://192.168.33.102:8080/AndroidTest/AddStudent")
+                    .url(Constant.htUrl + "AddStudent")
                     .addParams("className", String.valueOf(e_className.getText()))
                     .addParams("studentNumber", String.valueOf(e_studentNumber.getText()))
                     .addParams("name", String.valueOf(e_name.getText()))

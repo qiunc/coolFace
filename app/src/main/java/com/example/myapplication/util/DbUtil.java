@@ -2,7 +2,6 @@ package com.example.myapplication.util;
 
 import android.text.TextUtils;
 
-import com.example.myapplication.db.StudentAttendance;
 import com.example.myapplication.db.Subjects;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -13,7 +12,6 @@ import org.json.JSONObject;
 import org.litepal.LitePal;
 
 import java.util.List;
-
 
 import okhttp3.Call;
 
@@ -52,16 +50,10 @@ public class DbUtil {
                 });
     }
 
-    public static void studentAttendance(StudentAttendance studentAttendance){
+    public static void updateStudentAttendance(){
 
         OkHttpUtils.post()
-                .url(Constant.htUrl+"mustAddStudentAttendance")
-                .addParams("className",studentAttendance.getTheClassName())
-                .addParams("Date",studentAttendance.getDate())
-                .addParams("subjectName",studentAttendance.getSubject())
-                .addParams("studentNumber",studentAttendance.getStudentNumber())
-                .addParams("studentName",studentAttendance.getStudentName())
-                .addParams("attendance",studentAttendance.getAttendance())
+                .url(Constant.htUrl+"mustQueryAllAttendance")
                 .build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
@@ -70,7 +62,7 @@ public class DbUtil {
 
             @Override
             public void onResponse(String response, int id) {
-
+                Utility.handleAttendanceResponse(response);
             }
         });
     }

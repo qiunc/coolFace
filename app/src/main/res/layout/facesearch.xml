@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg_login_bk">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -21,7 +22,6 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:contentDescription="人脸图片" />
-            />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -37,6 +37,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
                     android:background="@drawable/bg_login_submit"
+                    android:textColor="@color/white"
                     android:text="上传照片"/>
                 <Button
                     android:id="@+id/b_subject_choice"
@@ -44,6 +45,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/bg_login_submit"
+                    android:textColor="@color/white"
                     android:text="选择科目"/>
 
             </LinearLayout>
@@ -62,6 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
                     android:background="@drawable/bg_login_submit"
+                    android:textColor="@color/white"
                     android:text="选择日期"/>
 
                 <Button
@@ -70,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/bg_login_submit"
-                    android:onClick="showList"
+                    android:textColor="@color/white"
                     android:text="选择班级" />
 
             </LinearLayout>
@@ -94,6 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/bg_login_register"
+                android:textColor="@color/white"
                 android:text="搜索" />
 
 

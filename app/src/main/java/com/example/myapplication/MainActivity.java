@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.fragment.ChooseStudentFragment;
-import com.example.myapplication.fragment.FaceAlbumFragment;
 import com.example.myapplication.fragment.FaceCreatFragment;
 import com.example.myapplication.fragment.SearchAttendanceResultFragment;
 
@@ -32,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
         mFragmentSparseArray = new SparseArray<>();
         mFragmentSparseArray.append(R.id.today_tab, new ChooseStudentFragment());
         mFragmentSparseArray.append(R.id.record_tab, new FaceCreatFragment());
-        mFragmentSparseArray.append(R.id.contact_tab, new FaceAlbumFragment());
-        mFragmentSparseArray.append(R.id.settings_tab,new SearchAttendanceResultFragment());
+        mFragmentSparseArray.append(R.id.contact_tab, new SearchAttendanceResultFragment());
+       // mFragmentSparseArray.append(R.id.settings_tab,);
         mTabRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {

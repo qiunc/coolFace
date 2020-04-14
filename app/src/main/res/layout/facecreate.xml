@@ -6,24 +6,6 @@
     android:layout_height="match_parent"
     android:background="@mipmap/bg_login_bk"
     android:orientation="vertical">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorButtonNormal">
-
-        <TextView
-            android:id="@+id/title_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textColor="#000"
-            android:textSize="20sp"
-            android:text="学生注册"/>
-
-    </RelativeLayout>
-
-    
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -34,20 +16,13 @@
             android:focusableInTouchMode="true"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/iv_face"
-                android:layout_width="200dp"
-                android:layout_height="300dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:contentDescription="人脸图片" />
-            />
+
             <Button
                 android:id="@+id/bt_login_face_choise"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginLeft="24dp"
-                android:layout_marginTop="1dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginRight="24dp"
                 android:background="@drawable/bg_login_submit"
                 android:elevation="0dp"
@@ -251,6 +226,13 @@
                 android:textSize="@dimen/font_18"
                 android:translationZ="0dp"
                 tools:targetApi="lollipop" />
+            <ImageView
+                android:id="@+id/iv_face"
+                android:layout_width="200dp"
+                android:layout_height="300dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:contentDescription="人脸图片" />
 
             <!--<TextView-->
                 <!--android:layout_width="wrap_content"-->
@@ -264,12 +246,10 @@
                 <!--android:textSize="15dp"/>-->
             <ImageView
                 android:id="@+id/iv_black"
-                android:layout_width="200dp"
-                android:layout_height="300dp"
+                android:layout_width="20dp"
+                android:layout_height="80dp"
                 android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                />
-            />
+                android:layout_marginTop="10dp" />
         </LinearLayout>
         
     </ScrollView>

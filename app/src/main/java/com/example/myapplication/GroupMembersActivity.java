@@ -1,20 +1,19 @@
-package com.example.myapplication.fragment;
+package com.example.myapplication;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.fragment.app.Fragment;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.myapplication.R;
 import com.example.myapplication.db.Student;
 import com.example.myapplication.util.ImageTools;
 
@@ -27,47 +26,43 @@ import java.util.Map;
 
 
 /**
- * Created by Administrator on 2018/5/3 0003.
+ * Created by Qiunc on 2020/4/2 0003.
+ * ChooseStudentFragment查看每个群组的成员信息时跳转的activity
  */
 
-public class FaceAlbumFragment extends Fragment {
+public class GroupMembersActivity extends AppCompatActivity {
 
-    private Button update_album;
     private ListView listView;
     //定义一个列表集合
-    List<Map<String, Object>> listItems;
-    List<Student> studentList;
-    Map<String, Object> map;
+    private List<Map<String, Object>> listItems;
+    private List<Student> studentList;
+    private Map<String, Object> map;
     //定义一个simpleAdapter,供列表项使用
-    SimpleAdapter simpleAdapter;
-    private View view;
+    private SimpleAdapter simpleAdapter;
     private static final int SCALE = 6;
+    private String GroupName;
+    private TextView titleText;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.facealbum, container, false);
-        update_album = (Button)view.findViewById(R.id.update_album);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.groupmember);
+        Intent intent = getIntent();
+        GroupName = intent.getStringExtra("GroupName");
+        titleText = (TextView)findViewById(R.id.tv_title_text);
         initEvent();
-        return view;
     }
 
     private void initEvent() {
         //初始化列表集合
         getFaceDetail();
-
-        update_album.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                getFaceDetail();
-            }
-        });
     }
 
     public void getFaceDetail(){
-
-       // final JSONObject json=new JSONObject();
-        //后台接口
-
-        studentList = LitePal.findAll(Student.class);
+        titleText.setText(GroupName);
+        studentList = LitePal.where("theClassName = ?", GroupName).order("studentNumber").find(Student.class);
         listItems = new ArrayList<Map<String, Object>>();
+        if(studentList.size() > 0) {
             for (Student student : studentList){
 //                Log.d("qnc", student.getStudentNumber());
 //                Log.d("qnc", student.getGender());
@@ -78,45 +73,14 @@ public class FaceAlbumFragment extends Fragment {
                 map.put("name",student.getName());
                 map.put("sex",student.getGender());
                 map.put("studentNumber",student.getStudentNumber());
-                map.put("classname",student.getTheClassName());
                 listItems.add(map);
-
             }
-        Log.d("qnc", listItems.toString());
-        loadAdapter();
-   //     String url= Constant.htUrl+"QueryAllStudent";
+            loadAdapter();
+        }
+        else {
+            Toast.makeText(this,"暂无成员信息，请注册成员",Toast.LENGTH_SHORT).show();
+        }
 
-//        OkHttpUtils
-//                .get()
-//                .url(url)
-//                .build()
-//                .execute(new StringCallback() {
-//                    @Override
-//                    public void onError(Call call, Exception e, int id) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onResponse(String response, int id) {
-//                        try {
-//                            //Log.d("de", "onSuccess: "+s);
-//                            JSONArray jsonArray = new JSONArray(response);
-//                          //  json.put("result",jsonArray) ;
-//                            Log.d("ht",jsonArray.toString());
-//                            listItemsInit(jsonArray);  //将后台数据放入listView
-//                            loadAdapter();  //加载适配器到listView
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-
-//        try {
-//            return json.getJSONArray("result");
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
     }
     /**
          * 初始化适配器需要的数据格式
@@ -125,13 +89,13 @@ public class FaceAlbumFragment extends Fragment {
 
     private void loadAdapter() {
 
-        listView = (ListView) view.findViewById(R.id.list_view);
+        listView = (ListView)findViewById(R.id.list_view);
         // key值数组，适配器通过key值取value，与列表项组件一一对应
-        String[] from=new String[]{"image","name","sex","studentNumber","classname"};
+        String[] from=new String[]{"image","name","sex","studentNumber"};
         // 列表项组件Id 数组
         int[] to=new int[]{R.id.iv_face, R.id.tv_name_v, R.id.tv_sex_v,
-                R.id.tv_studentnumber_v, R.id.tv_classname_v};
-        simpleAdapter = new SimpleAdapter(getActivity(), listItems, R.layout.face_item,
+                R.id.tv_studentnumber_v};
+        simpleAdapter = new SimpleAdapter(this, listItems, R.layout.face_item,
                 from, to);
         simpleAdapter.setViewBinder(new SimpleAdapter.ViewBinder() {
 
@@ -156,9 +120,11 @@ public class FaceAlbumFragment extends Fragment {
                 return false;
             }
         });
-
-        listView.setAdapter(simpleAdapter);
+        if (listItems.size() > 0) {
+            listView.setAdapter(simpleAdapter);
+        }
+        else {
+            Toast.makeText(this,"暂无成员信息，请注册成员",Toast.LENGTH_SHORT).show();
+        }
     }
-
-
 }

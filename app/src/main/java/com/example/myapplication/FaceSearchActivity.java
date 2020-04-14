@@ -32,7 +32,6 @@ import com.example.myapplication.db.Subjects;
 import com.example.myapplication.util.Constant;
 import com.example.myapplication.util.DbUtil;
 import com.example.myapplication.util.ImageTools;
-import com.example.myapplication.util.Utility;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -49,6 +48,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 import okhttp3.Call;
 
@@ -76,12 +76,10 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
     private static final String TAG = "FaceSearchFragment";
     private int flag1;
     private int flag2;
-
-    private List<Student> studentList;
+    private StudentAttendance studentAttendance;
     private List<StudentAttendance> studentAttendanceList = new ArrayList<StudentAttendance>();;
-    private StudentAttendance studentAttendance = new StudentAttendance();
     private ProgressDialog progressDialog;
-
+    private Lock lock;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,6 +136,7 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
 
     private void detectFace() {
         flag2 = 0;
+      //  flag1 = 0;
         showProgressDialog();
         //将图片转化为bitmap
         Bitmap bitmap = ((BitmapDrawable) iv_face.getDrawable()).getBitmap();
@@ -206,6 +205,7 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
                     //similarity=object.getString("confidence");
                     similarity = array.getJSONObject(0).getString("confidence");
                     String faceToken = array.getJSONObject(0).getString("face_token");
+                    Log.d("qnc1", faceToken);
 
                     //用于参考的置信度阈值1e-3,1e-4,1e-5
                     //如果置信值低于“千分之一”阈值则不建议认为是同一个人；
@@ -214,7 +214,8 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
 
                     //1e-3
                     String yz_3 = thresholds.getString("1e-3");
-                    if (Double.parseDouble(similarity) > Double.parseDouble(yz_3) && array != null) {
+                    if (Double.parseDouble(similarity) > Double.parseDouble(yz_3)) {
+                        //flag1++;
                         getditailByFaceToken(faceToken);
 //                        search_face.setVisibility(View.VISIBLE);
 //                        no_face.setVisibility(View.GONE);
@@ -232,62 +233,56 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
         });
     }
 
-    private void getditailByFaceToken(final String faceToken) {
-        Log.d(TAG, "getditailByfaceToken");
-        studentList = LitePal.where("facetoken = ? ", faceToken).find(Student.class);
+    private synchronized void getditailByFaceToken(String faceToken) {
+        Log.d(TAG, faceToken);
+        List<Student> studentList = LitePal.where("facetoken = ? ", faceToken).find(Student.class);
         if (studentList.size() > 0) {
             for (Student student : studentList) {
+                studentAttendance = new StudentAttendance();
                 studentAttendance.setDate(b_date_choice.getText().toString());
                 studentAttendance.setTheClassName(student.getTheClassName());
                 studentAttendance.setStudentNumber(student.getStudentNumber());
                 studentAttendance.setSubject(b_subject_choice.getText().toString());
                 studentAttendance.setStudentName(student.getName());
                 studentAttendance.setAttendance("出勤");
-                studentAttendanceList.add(studentAttendance);
             }
-
-            flag2++;
+                studentAttendanceList.add(studentAttendance);
+                 flag2++;
+            Log.d(TAG, ""+flag2);
             if (flag2 == flag1){
                 attendanceResult();
             }
+            OkHttpUtils.post()
+                    .url(Constant.htUrl+"mustAddStudentAttendance")
+                    .addParams("date",studentAttendance.getDate())
+                    .addParams("className",studentAttendance.getTheClassName())
+                    .addParams("subjectName",studentAttendance.getSubject())
+                    .addParams("studentNumber",studentAttendance.getStudentNumber())
+                    .addParams("studentName",studentAttendance.getStudentName())
+                    .addParams("attendance",studentAttendance.getAttendance())
+                    .build().execute(new StringCallback() {
+                @Override
+                public void onError(Call call, Exception e, int id) {
+
+                }
+
+                @Override
+                public void onResponse(String response, int id) {
+
+
+                }
+            });
         }
     }
 
     private void attendanceResult() {
         Log.d(TAG, "attendanceResult: ");
-        OkHttpUtils.post()
-                .url(Constant.htUrl+"mustQueryAllAttendance")
-                .build().execute(new StringCallback() {
-            @Override
-            public void onError(Call call, Exception e, int id) {
                 progressDialog.dismiss();
-                Toast.makeText(FaceSearchActivity.this, "调用失败", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onResponse(String response, int id) {
-                Utility.handleAttendanceResponse(response);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-//                        StudentAttendance studentAttendance1 = new StudentAttendance();
-//                        studentAttendance1.setDate("2020年4月11日");
-//                        studentAttendance1.setTheClassName("16光电2班");
-//                        studentAttendance1.setStudentNumber("B20160404214");
-//                        studentAttendance1.setStudentName("邱宁聪");
-//                        studentAttendance1.setAttendance("出勤");
-
-                        progressDialog.dismiss();
-
-                        Bundle bundle = new Bundle();
-                        Intent attendanceResultIntent = new Intent(FaceSearchActivity.this, AttendanceResultAcitivity.class);
-                        bundle.putSerializable("attendanceResult",(Serializable)studentAttendanceList);
-                        attendanceResultIntent.putExtras(bundle);
-                        startActivity(attendanceResultIntent);
-                    }
-                });
-            }
-        });
+                Bundle bundle = new Bundle();
+                Intent attendanceResultIntent = new Intent(FaceSearchActivity.this, AttendanceResultAcitivity.class);
+                bundle.putSerializable("attendanceResult",(Serializable)studentAttendanceList);
+                attendanceResultIntent.putExtras(bundle);
+                startActivity(attendanceResultIntent);
     }
 
     private void dateChoice() {

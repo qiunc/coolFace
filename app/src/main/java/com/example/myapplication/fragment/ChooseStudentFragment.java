@@ -2,14 +2,13 @@ package com.example.myapplication.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,10 +18,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.myapplication.GroupMembersActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.db.Class;
 import com.example.myapplication.db.Student;
 import com.example.myapplication.util.Constant;
+import com.example.myapplication.util.DbUtil;
 import com.example.myapplication.util.HttpUtil;
 import com.example.myapplication.util.Utility;
 
@@ -50,8 +51,6 @@ public class ChooseStudentFragment extends Fragment {
 
     private TextView titleText;
 
-    private Button backButton;
-
     private ListView listView;
 
     private ArrayAdapter<String> adapter;
@@ -76,7 +75,6 @@ public class ChooseStudentFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.choose_student, container, false);
         titleText = (TextView) view.findViewById(R.id.title_text);
-        backButton = (Button) view.findViewById(R.id.back_button);
         listView = (ListView) view.findViewById(R.id.list_view);
         swipeRefresh = (SwipeRefreshLayout)view.findViewById(R.id.swipe_refresh);
         swipeRefresh.setColorSchemeColors(R.color.colorPrimary);
@@ -84,6 +82,8 @@ public class ChooseStudentFragment extends Fragment {
             @Override
             public void onRefresh() {
                 String address = Constant.htUrl + "QueryAllStudent";
+                DbUtil.updateSubjectSQLite();
+                DbUtil.updateStudentAttendance();
                 queryFromServer(address, "yourClass");
             }
         });
@@ -100,26 +100,27 @@ public class ChooseStudentFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (currentLevel == LEVEL_CLASS){
                     selectedClass =classList.get(position);
-                    queryStudent();
+                    Intent intent = new Intent(getActivity(), GroupMembersActivity.class);
+                    intent.putExtra("GroupName",selectedClass.getTheClassName());
+                    startActivity(intent);
                 }
             }
         });
-
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(currentLevel == LEVEL_STUDENT) {
-                    queryClass();
-                }
-            }
-        });
+//
+//        backButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(currentLevel == LEVEL_STUDENT) {
+//                    queryClass();
+//                }
+//            }
+//        });
         queryClass();
     }
 
 
     private void queryClass(){
         titleText.setText("CCSU");
-        backButton.setVisibility(View.GONE);
         classList = LitePal.findAll(Class.class);
         if (classList.size() > 0) {
             dataList.clear();
@@ -129,25 +130,23 @@ public class ChooseStudentFragment extends Fragment {
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             currentLevel = LEVEL_CLASS;
-        }else {
-
         }
     }
 
-    private void queryStudent() {
-        titleText.setText(selectedClass.getTheClassName());
-        backButton.setVisibility(View.VISIBLE);
-        studentList = LitePal.where("theClassName = ?", selectedClass.getTheClassName()).find(Student.class);
-        if (studentList.size() > 0) {
-            dataList.clear();
-            for (Student student : studentList) {
-                dataList.add(student.getStudentNumber()+"          "+student.getGender()+"          "+student.getName());
-            }
-            adapter.notifyDataSetChanged();
-            listView.setSelection(0);
-            currentLevel = LEVEL_STUDENT;
-        }
-    }
+//    private void queryStudent() {
+//        titleText.setText(selectedClass.getTheClassName());
+//        backButton.setVisibility(View.VISIBLE);
+//        studentList = LitePal.where("theClassName = ?", selectedClass.getTheClassName()).find(Student.class);
+//        if (studentList.size() > 0) {
+//            dataList.clear();
+//            for (Student student : studentList) {
+//                dataList.add(student.getStudentNumber()+"          "+student.getGender()+"          "+student.getName());
+//            }
+//            adapter.notifyDataSetChanged();
+//            listView.setSelection(0);
+//            currentLevel = LEVEL_STUDENT;
+//        }
+//    }
 
     private void queryFromServer(String address, final String type) {
         showProgressDialog();
@@ -156,7 +155,6 @@ public class ChooseStudentFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseText = response.body().string();
-                Log.d("qnc", responseText);
                 boolean result = false;
                 if ("yourClass".equals(type)) {
                     result = Utility.handleClassResponse(responseText);

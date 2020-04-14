@@ -69,10 +69,15 @@ public class TableAdapter extends BaseAdapter {
         viewHolder.attendanceClass.setTextSize(13);
         viewHolder.attendanceStudentNumber.setText(studentAttendance.getStudentNumber());
         viewHolder.attendanceStudentNumber.setTextSize(13);
-        viewHolder.attendanceStudentName.setText(studentAttendance.getStudentName()+"");
+        viewHolder.attendanceStudentName.setText(studentAttendance.getStudentName());
         viewHolder.attendanceStudentName.setTextSize(13);
-        viewHolder.isAttendance.setText(studentAttendance.getAttendance()+"");
-        viewHolder.isAttendance.setTextSize(13);
+        if (studentAttendance.getAttendance() == null || "".equals(studentAttendance.getAttendance())) {
+            viewHolder.isAttendance.setText("缺勤");
+            viewHolder.isAttendance.setTextSize(13);
+        }else {
+            viewHolder.isAttendance.setText(studentAttendance.getAttendance());
+            viewHolder.isAttendance.setTextSize(13);
+        }
         return convertView;
     }
 

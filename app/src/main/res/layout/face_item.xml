@@ -6,9 +6,12 @@
 
     <ImageView
         android:id="@+id/iv_face"
-        android:layout_width="100dp"
-        android:layout_height="150dp"
+        android:layout_width="60dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
         android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
         android:scaleType="center"
         />
 
@@ -18,8 +21,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="名字:"
-        android:layout_marginTop="18dp"
-        android:textSize="16dp"
+        android:layout_marginTop="1dp"
+        android:textSize="16sp"
         android:layout_toRightOf="@id/iv_face"
         android:layout_alignTop="@id/iv_face"
         />
@@ -27,7 +30,7 @@
         android:id="@+id/tv_name_v"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:layout_marginLeft="5dp"
         android:layout_toRightOf="@id/tv_name_t"
         android:layout_alignTop="@id/tv_name_t"
@@ -38,8 +41,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="性别:"
-        android:layout_marginTop="30dp"
-        android:textSize="16dp"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp"
         android:layout_toRightOf="@id/iv_face"
         android:layout_below="@id/tv_name_t"
         android:layout_alignLeft="@id/tv_name_t"
@@ -48,7 +51,7 @@
         android:id="@+id/tv_sex_v"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:layout_marginLeft="5dp"
         android:layout_toRightOf="@id/tv_sex_t"
         android:layout_alignTop="@id/tv_sex_t"
@@ -59,8 +62,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="学号:"
-        android:layout_marginTop="30dp"
-        android:textSize="16dp"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp"
         android:layout_toRightOf="@id/iv_face"
         android:layout_below="@id/tv_sex_t"
         android:layout_alignLeft="@id/tv_sex_t"
@@ -69,31 +72,8 @@
         android:id="@+id/tv_studentnumber_v"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16dp"
         android:layout_marginLeft="5dp"
         android:layout_toRightOf="@id/tv_studentnumber_t"
         android:layout_alignTop="@id/tv_studentnumber_t"
         />
-
-    <TextView
-        android:id="@+id/tv_classname_t"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="班级:"
-        android:layout_marginTop="30dp"
-        android:textSize="16dp"
-        android:layout_toRightOf="@id/iv_face"
-        android:layout_below="@id/tv_studentnumber_t"
-        android:layout_alignLeft="@id/tv_studentnumber_t"
-        />
-    <TextView
-        android:id="@+id/tv_classname_v"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16dp"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/tv_classname_t"
-        android:layout_alignTop="@id/tv_classname_t"
-        />
-
 </RelativeLayout>
