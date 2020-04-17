@@ -4,19 +4,19 @@ package com.example.myapplication.db;
  * Created by import on 2018-01-31.
  */
 
-public class Dic {
+public class DicBean {
     private String code;
     private String name;
 
-    public Dic(){
+    public DicBean(){
         this.code="";
         this.name="";
     }
-    public Dic(String code, String name) {
+    public DicBean(String code, String name) {
         this.code = code;
         this.name = name;
     }
-    public Dic(String code, String name, String type) {
+    public DicBean(String code, String name, String type) {
         this.code = code;
         this.name = name;
     }

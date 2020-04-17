@@ -14,7 +14,9 @@ import org.litepal.LitePal;
 import java.util.List;
 
 import okhttp3.Call;
-
+/**
+ * 更新本地缓存
+ */
 public class DbUtil {
 
     public static void updateSubjectSQLite() {

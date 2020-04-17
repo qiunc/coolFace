@@ -31,7 +31,7 @@
             android:name=".SignActivity"
             android:label="take photos">
         </activity>
-        <activity android:name=".FaceSearchActivity"
+        <activity android:name=".AttendanceActivity"
             android:label="face search">
         </activity>
         <activity android:name=".AttendanceResultAcitivity">

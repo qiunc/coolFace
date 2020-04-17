@@ -8,7 +8,11 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-
+/**
+ * Created by Qiunc on 2020/3/28 0003.
+ * 添加课程所用到的dialog
+ * 不用AlertDialog用DialogActivity
+ */
 public class DialogActivity extends AppCompatActivity {
 
     @Override

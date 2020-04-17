@@ -25,7 +25,7 @@ import com.example.myapplication.Adapter.SearchAdapter;
 import com.example.myapplication.Adapter.TableAdapter;
 import com.example.myapplication.R;
 import com.example.myapplication.db.Class;
-import com.example.myapplication.db.Dic;
+import com.example.myapplication.db.DicBean;
 import com.example.myapplication.db.StudentAttendance;
 import com.example.myapplication.db.Subjects;
 import com.example.myapplication.util.ScreenUtils;
@@ -154,31 +154,31 @@ public class SearchAttendanceResultFragment extends Fragment implements View.OnC
 
 
         subjectAdapter = new SearchAdapter(getActivity());
-        List<Dic> subjectResult = new ArrayList<>();
+        List<DicBean> subjectResult = new ArrayList<>();
         List<Subjects> subjectsList = LitePal.findAll(Subjects.class);
         for (Subjects subjects : subjectsList) {
-            subjectResult.add(new Dic("2",subjects.getSubjectName()));
+            subjectResult.add(new DicBean("2",subjects.getSubjectName()));
         }
         subjectAdapter.setItems(subjectResult);
 
 
 
         classAdapter = new SearchAdapter(getActivity());
-        List<Dic> classResult = new ArrayList<>();
-        classResult.add(new Dic("000","全部"));
+        List<DicBean> classResult = new ArrayList<>();
+        classResult.add(new DicBean("000","全部"));
         List<Class> classList = LitePal.findAll(Class.class);
         for (Class classes : classList) {
-            classResult.add(new Dic("001",classes.getTheClassName()));
+            classResult.add(new DicBean("001",classes.getTheClassName()));
         }
         classAdapter.setItems(classResult);
 
 
 
         sexAdapter = new SearchAdapter(getActivity());
-        List<Dic> cultureResult = new ArrayList<>();
-        cultureResult.add(new Dic("000","全部"));
-        cultureResult.add(new Dic("001","男"));
-        cultureResult.add(new Dic("002","女"));
+        List<DicBean> cultureResult = new ArrayList<>();
+        cultureResult.add(new DicBean("000","全部"));
+        cultureResult.add(new DicBean("001","男"));
+        cultureResult.add(new DicBean("002","女"));
         sexAdapter.setItems(cultureResult);
 
         listItem = getLayoutInflater().inflate(R.layout.item_listview, null, false);

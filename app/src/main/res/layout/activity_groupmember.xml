@@ -18,11 +18,9 @@
 
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/list_view"
+    <com.baoyz.swipemenulistview.SwipeMenuListView
+        android:id="@+id/list__view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </ListView>
+        android:layout_height="match_parent" />
 
 </LinearLayout>

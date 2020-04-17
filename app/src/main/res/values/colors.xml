@@ -3,7 +3,8 @@
    <!-- <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>-->
-
+ <color name="top">#C7C7CD</color>
+ <color name="del">#FC3C39</color>
     <color name="textColorSecondary">#ff353535</color>
     <color name="colorFloatingActionButton">#6633FF</color>
     <color name="colorSplashBackground">#6633FF</color>

@@ -77,7 +77,7 @@ public class FaceCreatFragment extends Fragment implements View.OnClickListener 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.facecreate, container, false);
+        view = inflater.inflate(R.layout.face_create, container, false);
         initViews();
         initEvent();
         // getDetail();

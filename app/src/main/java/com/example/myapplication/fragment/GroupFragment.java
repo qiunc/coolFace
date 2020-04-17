@@ -42,7 +42,7 @@ import okhttp3.Response;
  * Created by Qiunc on 2020/3/28 0003.
  */
 
-public class ChooseStudentFragment extends Fragment {
+public class GroupFragment extends Fragment {
     public static final int LEVEL_CLASS = 0;
 
     public static final int LEVEL_STUDENT = 1;
@@ -73,7 +73,7 @@ public class ChooseStudentFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.choose_student, container, false);
+        View view = inflater.inflate(R.layout.choose_group, container, false);
         titleText = (TextView) view.findViewById(R.id.title_text);
         listView = (ListView) view.findViewById(R.id.list_view);
         swipeRefresh = (SwipeRefreshLayout)view.findViewById(R.id.swipe_refresh);

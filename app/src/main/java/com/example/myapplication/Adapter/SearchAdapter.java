@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.db.Dic;
+import com.example.myapplication.db.DicBean;
 
 import java.util.List;
 
@@ -22,10 +22,10 @@ public class SearchAdapter extends Madapter {
     private Context context;
     private int selectColor = Color.GRAY;
     private LayoutInflater inflater;
-    private List<Dic> items;
+    private List<DicBean> items;
     private int selectedPosition = -1;
 
-    public List<Dic> getItems() {
+    public List<DicBean> getItems() {
         return items;
     }
 
@@ -55,7 +55,7 @@ public class SearchAdapter extends Madapter {
 
 
 
-    public void setItems(List<Dic> items) {
+    public void setItems(List<DicBean> items) {
         this.items = items;
     }
 

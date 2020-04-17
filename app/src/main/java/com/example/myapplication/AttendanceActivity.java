@@ -56,7 +56,7 @@ import okhttp3.Call;
  * Created by qiunc on 2020/4/3 0003.
  */
 
-public class FaceSearchActivity extends AppCompatActivity implements View.OnClickListener {
+public class AttendanceActivity extends AppCompatActivity implements View.OnClickListener {
     private Uri imageUri;
     private String similarity;
     private ImageView iv_face;
@@ -83,7 +83,7 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.facesearch);
+        setContentView(R.layout.activity_attendance);
         initViews();
         initEvent();
     }
@@ -156,7 +156,7 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onError(Call call, Exception e, int id) {
                 Log.d(TAG, e.toString());
-                Toast.makeText(FaceSearchActivity.this, "调用失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AttendanceActivity.this, "调用失败", Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
             }
 
@@ -191,7 +191,7 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
                 .build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
-                Toast.makeText(FaceSearchActivity.this, "调用失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AttendanceActivity.this, "调用失败", Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
             }
 
@@ -279,7 +279,7 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
         Log.d(TAG, "attendanceResult: ");
                 progressDialog.dismiss();
                 Bundle bundle = new Bundle();
-                Intent attendanceResultIntent = new Intent(FaceSearchActivity.this, AttendanceResultAcitivity.class);
+                Intent attendanceResultIntent = new Intent(AttendanceActivity.this, AttendanceResultAcitivity.class);
                 bundle.putSerializable("attendanceResult",(Serializable)studentAttendanceList);
                 attendanceResultIntent.putExtras(bundle);
                 startActivity(attendanceResultIntent);
@@ -320,7 +320,7 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 b_class_choice.setText(className[which]);
-                Toast.makeText(FaceSearchActivity.this, "选择的班级为：" + className[which], Toast.LENGTH_SHORT).show();
+                Toast.makeText(AttendanceActivity.this, "选择的班级为：" + className[which], Toast.LENGTH_SHORT).show();
             }
         });
         builder.show();
@@ -356,12 +356,12 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
 //                    builder.setView(new EditText(getActivity()));
 //                    builder.setPositiveButton("添加",null);
 //                    builder.setNegativeButton("取消",null);
-                    Intent addSubjectIntent = new Intent(FaceSearchActivity.this, DialogActivity.class);
+                    Intent addSubjectIntent = new Intent(AttendanceActivity.this, DialogActivity.class);
                     startActivityForResult(addSubjectIntent,ADD_SUBJECTS);
                 }
                 else {
                     b_subject_choice.setText(className[which]);
-                    Toast.makeText(FaceSearchActivity.this, "选择的课程为：" + className[which], Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AttendanceActivity.this, "选择的课程为：" + className[which], Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -396,7 +396,7 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
             }
 
             private void takePhoto() {
-                File outputImage = new File(FaceSearchActivity.this.getExternalCacheDir(), "output_image.jpg");
+                File outputImage = new File(AttendanceActivity.this.getExternalCacheDir(), "output_image.jpg");
                 try {
                     if (outputImage.exists()) {
                         outputImage.delete();
@@ -406,7 +406,7 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
                     e.printStackTrace();
                 }
                 if (Build.VERSION.SDK_INT >= 24) {
-                    imageUri = FileProvider.getUriForFile(FaceSearchActivity.this, "com.example.cameraablumtest.fileprovider", outputImage);
+                    imageUri = FileProvider.getUriForFile(AttendanceActivity.this, "com.example.cameraablumtest.fileprovider", outputImage);
                 } else {
                     imageUri = Uri.fromFile(outputImage);
                 }
@@ -474,13 +474,13 @@ public class FaceSearchActivity extends AppCompatActivity implements View.OnClic
                 .build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
-                Toast.makeText(FaceSearchActivity.this, "连接数据库失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AttendanceActivity.this, "连接数据库失败", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onResponse(String response, int id) {
                 Log.d(TAG, response.toString());
-                Toast.makeText(FaceSearchActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AttendanceActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
                 DbUtil.updateSubjectSQLite();
             }
         });
