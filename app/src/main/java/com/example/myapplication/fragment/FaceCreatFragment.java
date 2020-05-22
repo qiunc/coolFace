@@ -36,7 +36,6 @@ import androidx.fragment.app.Fragment;
 import com.example.myapplication.R;
 import com.example.myapplication.util.Constant;
 import com.example.myapplication.util.ImageTools;
-import com.heynchy.compress.compressUtil.FileSizeUtil;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -51,6 +50,8 @@ import java.io.IOException;
 import okhttp3.Call;
 
 import static android.app.Activity.RESULT_OK;
+
+//import //com.heynchy.compress.compressUtil.FileSizeUtil;
 
 
 /**
@@ -424,7 +425,6 @@ public class FaceCreatFragment extends Fragment implements View.OnClickListener 
             imageAbsolutePath = imagePath;
               Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
             iv_face.setImageBitmap(bitmap);
-            Log.d(TAG, FileSizeUtil.getFileOrFilesSize(imagePath));
 //            CompressImage.getInstance().imageLubrnCompress(imagePath, imagePath, new CompressLubanListener() {
 //                @Override
 //                public void onCompressLubanSuccessed(String s, Bitmap bitmap) {

@@ -74,4 +74,8 @@
     <color name="color_8">#43CD80</color>
     <color name="color_9">#00EE00</color>
     <color name="color_10">#708090</color>
+
+
+    <color name="color_bg_notification">#80000000</color>
+    <color name="color_bg_name">#80000000</color>
 </resources>

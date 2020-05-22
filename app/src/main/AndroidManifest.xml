@@ -3,12 +3,13 @@
     package="com.example.myapplication">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:name="org.litepal.LitePalApplication"
+        android:name="registerandlogin.MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/logo"
         android:label="@string/app_name"
@@ -16,27 +17,51 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan">
+            android:name="registerandlogin.activity.ChooseFunctionActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".DialogActivity"
             android:theme="@style/DialogActivityTheme">
         </activity>
+
         <activity
             android:name=".SignActivity"
             android:label="take photos">
         </activity>
+
         <activity android:name=".AttendanceActivity"
             android:label="face search">
         </activity>
+
         <activity android:name=".AttendanceResultAcitivity">
         </activity>
-        <activity android:name=".GroupMembersActivity"></activity>
+
+        <activity android:name=".GroupMembersActivity">
+        </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTop" />
+        <activity
+            android:name="registerandlogin.activity.RegisterAndRecognizeActivity"
+            android:launchMode="singleTop" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+
     </application>
 
 </manifest>
